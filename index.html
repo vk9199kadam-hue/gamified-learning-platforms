@@ -135,22 +135,22 @@
     </div>
 
     <div class="game-grid">
-        <!-- Age 2-5 Game Card -->
-        <a id="card25" class="game-card green" onclick="openGame('game_3_5.html')">
+        <!-- Age 2-5 -> Points to game_3_5.html (Copied Easy Game) -->
+        <a id="card25" class="game-card green" href="game_3_5.html">
             <h2 class="game-title green-text">Nature Hero</h2>
             <img class="game-img" src="https://images.unsplash.com/photo-1543466835-00a7907e9de1?w=400" alt="">
             <p style="margin-top: 10px;">Age Recommended: 2-5</p>
         </a>
 
-        <!-- Age 5-8 Game Card -->
-        <a id="card58" class="game-card pink" onclick="openGame('game_5_8.html')">
+        <!-- Age 5-8 -> Points to game_5_8.html (Copied 4 Pics Game) -->
+        <a id="card58" class="game-card pink" href="game_5_8.html">
             <h2 class="game-title pink-text">4 Pictures One Word</h2>
             <img class="game-img" src="https://images.unsplash.com/photo-1490750967868-886a50ad92a0?w=400" alt="">
             <p style="margin-top: 10px;">Age Recommended: 5-8</p>
         </a>
 
-        <!-- Age 8-11 Game Card -->
-        <a id="card811" class="game-card yellow" onclick="openGame('https://goeroeg.github.io/ld-learn/apps/learn/ld-learn.html')">
+        <!-- Age 8-11 -> Official Repository Link -->
+        <a id="card811" class="game-card yellow" href="https://goeroeg.github.io/ld-learn/apps/learn/ld-learn.html" target="_blank">
             <h2 class="game-title yellow-text">Math and Climate</h2>
             <img class="game-img" src="https://images.unsplash.com/photo-1473186578172-c141e6798ee4?w=400" alt="">
             <p style="margin-top: 10px;">Age Recommended: 8-11</p>
@@ -170,7 +170,6 @@
             const c58 = document.getElementById('card58');
             const c811 = document.getElementById('card811');
 
-            // Visibility logic
             if (age >= 2 && age <= 5) {
                 c25.style.display = 'block';
                 c58.style.display = 'none';
@@ -188,10 +187,6 @@
                 c58.style.display = 'block';
                 c811.style.display = 'block';
             }
-        }
-
-        function openGame(url) {
-            window.location.href = url;
         }
     </script>
 </body>
