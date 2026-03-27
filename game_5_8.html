@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>4 Pics 1 Word – EcoKids</title>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600;700;800&family=Quicksand:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg1:#0f2027;--bg2:#203a43;--bg3:#2c5364;
+  --card:rgba(255,255,255,0.06);--card-b:rgba(255,255,255,0.12);
+  --accent:#00e5ff;--accent2:#69f0ae;--accent3:#ffd740;--accent4:#ff6e40;
+  --text:#e8f5e9;--sub:#90a4ae;
+  --eg:#69f0ae;--mg:#ffd740;--hg:#ff6e40;
+  --ok:#00e676;--bad:#ff1744;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Quicksand',sans-serif;background:linear-gradient(135deg,var(--bg1)0%,var(--bg2)50%,var(--bg3)100%);min-height:100vh;color:var(--text);overflow-x:hidden;position:relative;}
+
+.grid-bg{position:fixed;inset:0;z-index:0;background-image:linear-gradient(rgba(0,229,255,0.04)1px,transparent 1px),linear-gradient(90deg,rgba(0,229,255,0.04)1px,transparent 1px);background-size:44px 44px;animation:gp 6s ease-in-out infinite;}
+@keyframes gp{0%,100%{opacity:.5}50%{opacity:1}}
+.orb{position:fixed;border-radius:50%;filter:blur(60px);opacity:.12;pointer-events:none;z-index:0;animation:of ease-in-out infinite;}
+@keyframes of{0%,100%{transform:translate(0,0)scale(1)}33%{transform:translate(30px,-40px)scale(1.1)}66%{transform:translate(-20px,20px)scale(.9)}}
+
+/* HEADER */
+.hdr{position:relative;z-index:10;text-align:center;padding:18px 20px 6px;}
+.logo{font-family:'Baloo 2',cursive;font-size:clamp(1.7rem,5vw,2.6rem);font-weight:800;background:linear-gradient(90deg,var(--accent),var(--accent2),var(--accent3));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;filter:drop-shadow(0 0 18px rgba(0,229,255,.4));}
+.tagline{font-size:.8rem;color:var(--sub);font-weight:700;letter-spacing:2px;text-transform:uppercase;margin-top:2px;}
+
+/* DIFF TABS */
+.dtabs{position:relative;z-index:10;display:flex;justify-content:center;gap:10px;padding:12px 20px 4px;flex-wrap:wrap;}
+.dt{padding:8px 20px;border-radius:50px;border:2px solid;font-family:'Baloo 2',cursive;font-size:.95rem;font-weight:700;cursor:pointer;background:transparent;transition:all .25s;color:var(--sub);border-color:var(--sub);}
+.dt.easy{color:var(--eg);border-color:var(--eg);}
+.dt.medium{color:var(--mg);border-color:var(--mg);}
+.dt.hard{color:var(--hg);border-color:var(--hg);}
+.dt.active.easy{background:var(--eg);color:#0f2027;box-shadow:0 0 20px rgba(105,240,174,.5);}
+.dt.active.medium{background:var(--mg);color:#0f2027;box-shadow:0 0 20px rgba(255,215,64,.5);}
+.dt.active.hard{background:var(--hg);color:#0f2027;box-shadow:0 0 20px rgba(255,110,64,.5);}
+.dt:hover:not(.active){transform:translateY(-2px);}
+
+/* HUD */
+.hud{position:relative;z-index:10;display:flex;justify-content:center;gap:10px;flex-wrap:wrap;padding:8px 20px 4px;}
+.chip{background:var(--card);border:1px solid var(--card-b);border-radius:50px;padding:5px 14px;font-family:'Baloo 2',cursive;font-size:.9rem;font-weight:700;backdrop-filter:blur(10px);display:flex;align-items:center;gap:5px;}
+.chip .v{color:var(--accent);}
+
+/* PROGRESS */
+.pgwrap{position:relative;z-index:10;display:flex;justify-content:center;align-items:center;gap:10px;padding:4px 20px 8px;}
+.pgt{width:min(420px,85vw);height:10px;background:rgba(255,255,255,.1);border-radius:10px;overflow:hidden;border:1px solid rgba(255,255,255,.1);}
+.pgb{height:100%;border-radius:10px;transition:width .6s cubic-bezier(.4,2,.6,1),background .4s;position:relative;overflow:hidden;}
+.pgb::after{content:'';position:absolute;top:0;left:-100%;width:100%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.4),transparent);animation:sh 1.5s infinite;}
+@keyframes sh{to{left:100%}}
+.pgb.eb{background:linear-gradient(90deg,#00c853,var(--eg));}
+.pgb.mb{background:linear-gradient(90deg,#ff8f00,var(--mg));}
+.pgb.hb{background:linear-gradient(90deg,#bf360c,var(--hg));}
+.pgn{font-family:'Baloo 2',cursive;font-size:.88rem;color:var(--sub);min-width:32px;}
+
+/* GAME */
+.gw{position:relative;z-index:10;max-width:620px;margin:0 auto;padding:0 14px 28px;}
+
+.dbadge{display:flex;align-items:center;justify-content:center;gap:6px;padding:4px 16px;border-radius:50px;font-family:'Baloo 2',cursive;font-size:.8rem;font-weight:700;margin-bottom:10px;}
+.dbadge.easy{background:rgba(105,240,174,.12);color:var(--eg);border:1px solid rgba(105,240,174,.3);}
+.dbadge.medium{background:rgba(255,215,64,.12);color:var(--mg);border:1px solid rgba(255,215,64,.3);}
+.dbadge.hard{background:rgba(255,110,64,.12);color:var(--hg);border:1px solid rgba(255,110,64,.3);}
+
+.qrow{text-align:center;margin-bottom:10px;font-size:.78rem;color:var(--sub);font-weight:700;letter-spacing:1.5px;text-transform:uppercase;}
+
+/* PHOTO GRID */
+.pgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px;}
+.pc{aspect-ratio:1;border-radius:18px;overflow:hidden;border:2px solid var(--card-b);background:var(--card);transition:transform .3s;animation:cr .5s ease both;}
+.pc:nth-child(1){animation-delay:.05s}.pc:nth-child(2){animation-delay:.15s}.pc:nth-child(3){animation-delay:.25s}.pc:nth-child(4){animation-delay:.35s}
+@keyframes cr{from{opacity:0;transform:scale(.65)rotate(-6deg)}to{opacity:1;transform:scale(1)rotate(0)}}
+.pi{width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;background:linear-gradient(135deg,rgba(255,255,255,.05),rgba(255,255,255,.02));transition:transform .3s;}
+.pc:hover .pi{transform:scale(1.05);}
+.pe{font-size:clamp(2.8rem,9vw,4.6rem);line-height:1;filter:drop-shadow(0 4px 12px rgba(0,0,0,.4));animation:ep 3.2s ease-in-out infinite;}
+.pc:nth-child(1) .pe{animation-delay:0s}.pc:nth-child(2) .pe{animation-delay:.8s}.pc:nth-child(3) .pe{animation-delay:1.6s}.pc:nth-child(4) .pe{animation-delay:2.4s}
+@keyframes ep{0%,100%{transform:scale(1)}50%{transform:scale(1.08)rotate(3deg)}}
+.pl{font-size:clamp(.6rem,1.7vw,.76rem);font-weight:700;color:rgba(255,255,255,.45);text-align:center;letter-spacing:.5px;text-transform:uppercase;padding:0 6px;}
+.pc.flash{border-color:var(--ok);box-shadow:0 0 22px rgba(0,230,118,.5);}
+
+/* ANSWER ROW */
+.arow{display:flex;justify-content:center;gap:7px;flex-wrap:wrap;margin-bottom:14px;min-height:52px;}
+.at{width:42px;height:48px;background:rgba(255,255,255,.07);border:2px solid rgba(255,255,255,.2);border-radius:10px;display:flex;align-items:center;justify-content:center;font-family:'Baloo 2',cursive;font-size:1.25rem;font-weight:800;color:#fff;cursor:pointer;transition:all .18s;text-transform:uppercase;}
+.at:hover{transform:translateY(-3px);background:rgba(255,255,255,.15);}
+.at.filled{background:rgba(255,255,255,.14);border-color:rgba(255,255,255,.5);}
+.at.ct{background:linear-gradient(135deg,#00c853,#00e676);border-color:#00e676;color:#0f2027;box-shadow:0 4px 16px rgba(0,200,83,.5);animation:tc .4s ease;}
+.at.wt{background:linear-gradient(135deg,#c62828,#ff1744);border-color:#ff1744;box-shadow:0 4px 16px rgba(255,23,68,.5);animation:tw .45s ease;}
+.at.ht{background:rgba(255,215,64,.2);border-color:var(--accent3);color:var(--accent3);}
+@keyframes tc{0%{transform:scale(.7)}60%{transform:scale(1.2)}100%{transform:scale(1)}}
+@keyframes tw{0%,100%{transform:translateX(0)}20%{transform:translateX(-6px)}40%{transform:translateX(6px)}60%{transform:translateX(-4px)}80%{transform:translateX(4px)}}
+
+/* LETTER BANK */
+.lbank{display:flex;flex-wrap:wrap;justify-content:center;gap:6px;margin-bottom:15px;}
+.lb{width:40px;height:44px;background:linear-gradient(135deg,rgba(255,255,255,.11),rgba(255,255,255,.05));border:1.5px solid rgba(255,255,255,.18);border-radius:10px;font-family:'Baloo 2',cursive;font-size:1.1rem;font-weight:800;color:#fff;cursor:pointer;transition:all .18s cubic-bezier(.4,2,.6,1);text-transform:uppercase;backdrop-filter:blur(5px);}
+.lb:hover:not(:disabled){transform:translateY(-4px)scale(1.1);background:rgba(255,255,255,.2);border-color:var(--accent);box-shadow:0 6px 16px rgba(0,229,255,.25);color:var(--accent);}
+.lb:active:not(:disabled){transform:scale(.95);}
+.lb:disabled{opacity:.2;cursor:not-allowed;transform:none;}
+
+/* ACTION ROW */
+.actrow{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;}
+.abtn{padding:9px 20px;border-radius:50px;border:2px solid;font-family:'Baloo 2',cursive;font-size:.9rem;font-weight:700;cursor:pointer;background:transparent;transition:all .2s;display:flex;align-items:center;gap:5px;}
+.acl{color:#ef9a9a;border-color:#ef9a9a;}.acl:hover{background:rgba(239,154,154,.13);transform:translateY(-2px);}
+.ah{color:var(--accent3);border-color:var(--accent3);}.ah:hover{background:rgba(255,215,64,.1);transform:translateY(-2px);}
+.ah:disabled{opacity:.3;cursor:not-allowed;transform:none;}
+.ask{color:var(--sub);border-color:var(--sub);}.ask:hover{background:rgba(144,164,174,.1);transform:translateY(-2px);}
+
+/* FEEDBACK */
+.fov{position:fixed;inset:0;z-index:200;background:rgba(0,0,0,.72);backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .3s;}
+.fov.show{opacity:1;pointer-events:all;}
+.fc{background:linear-gradient(135deg,#1a2a3a,#0d1f2d);border:2px solid;border-radius:28px;padding:30px 34px;text-align:center;max-width:360px;width:90%;transform:scale(.5)rotate(-5deg);transition:transform .45s cubic-bezier(.4,2,.6,1);}
+.fov.show .fc{transform:scale(1)rotate(0);}
+.fc.ok{border-color:var(--ok);box-shadow:0 30px 80px rgba(0,230,118,.2);}
+.fc.bad{border-color:var(--bad);box-shadow:0 30px 80px rgba(255,23,68,.2);}
+.femo{font-size:3.2rem;display:block;animation:ps .5s ease;}
+@keyframes ps{from{transform:scale(0)rotate(-180deg)}to{transform:scale(1)rotate(0)}}
+.ftit{font-family:'Baloo 2',cursive;font-size:1.8rem;font-weight:800;margin:8px 0 4px;}
+.ftit.g{color:var(--ok)}.ftit.b{color:var(--bad)}
+.fans{font-size:.95rem;color:var(--sub);font-weight:600;margin-bottom:10px;}
+.ffact{background:rgba(255,255,255,.05);border-left:3px solid var(--accent2);border-radius:8px;padding:10px 13px;font-size:.86rem;color:var(--text);text-align:left;margin-bottom:16px;line-height:1.5;}
+.fnxt{background:linear-gradient(135deg,var(--accent),#006064);color:#0f2027;border:none;border-radius:50px;padding:11px 30px;font-family:'Baloo 2',cursive;font-size:1.05rem;font-weight:800;cursor:pointer;box-shadow:0 6px 20px rgba(0,229,255,.35);transition:transform .2s;}
+.fnxt:hover{transform:translateY(-2px);}
+
+/* WIN */
+.ws{position:fixed;inset:0;z-index:300;background:radial-gradient(ellipse at center,#0d3320 0%,#0a1a2e 60%,#050d14 100%);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:24px;opacity:0;pointer-events:none;transition:opacity .6s;}
+.ws.show{opacity:1;pointer-events:all;}
+.wbig{font-size:clamp(3.5rem,14vw,6.5rem);animation:wt 2s ease-in-out infinite;}
+@keyframes wt{0%,100%{transform:rotate(-8deg)scale(1)}50%{transform:rotate(8deg)scale(1.08)}}
+.wh{font-family:'Baloo 2',cursive;font-size:clamp(1.9rem,6vw,3.2rem);font-weight:800;background:linear-gradient(90deg,var(--accent3),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin:10px 0 4px;filter:drop-shadow(0 0 20px rgba(255,215,64,.5));}
+.wsub{color:var(--sub);font-size:.95rem;font-weight:600;margin-bottom:18px;}
+.wstats{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;margin-bottom:22px;}
+.wst{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);border-radius:16px;padding:12px 20px;font-family:'Baloo 2',cursive;}
+.wstv{font-size:1.9rem;font-weight:800;display:block;color:var(--accent3);}
+.wstl{font-size:.78rem;color:var(--sub);text-transform:uppercase;letter-spacing:1px;}
+.wrbtn{background:linear-gradient(135deg,var(--accent3),#f57f17);color:#0f2027;border:none;border-radius:50px;padding:13px 42px;font-family:'Baloo 2',cursive;font-size:1.15rem;font-weight:800;cursor:pointer;box-shadow:0 8px 28px rgba(255,215,64,.4);transition:transform .2s;}
+.wrbtn:hover{transform:scale(1.05);}
+
+/* CONFETTI */
+.cf{position:fixed;pointer-events:none;z-index:250;animation:cff linear forwards;border-radius:2px;}
+@keyframes cff{0%{transform:translateY(-20px)rotate(0deg);opacity:1}100%{transform:translateY(105vh)rotate(720deg);opacity:0}}
+</style>
+</head>
+<body>
+
+<div class="grid-bg"></div>
+<div class="orb" style="width:300px;height:300px;background:#00e5ff;top:-80px;left:-80px;animation-duration:12s;"></div>
+<div class="orb" style="width:250px;height:250px;background:#69f0ae;bottom:-60px;right:-60px;animation-duration:9s;animation-delay:-4s;"></div>
+<div class="orb" style="width:180px;height:180px;background:#ffd740;top:45%;left:48%;animation-duration:15s;animation-delay:-7s;"></div>
+
+<div class="hdr">
+  <div class="logo">🌿 4 Pics 1 Word</div>
+  <div class="tagline">Eco Edition · Guess · Learn · Grow</div>
+</div>
+
+<div class="dtabs">
+  <button class="dt easy active" onclick="switchDiff('easy')">🟢 Easy</button>
+  <button class="dt medium" onclick="switchDiff('medium')">🟡 Medium</button>
+  <button class="dt hard" onclick="switchDiff('hard')">🔴 Hard</button>
+</div>
+
+<div class="hud">
+  <div class="chip">⭐ Score <span class="v" id="scoreVal">0</span></div>
+  <div class="chip">📸 <span class="v" id="qNum">1</span>/<span id="qTotal">8</span></div>
+  <div class="chip">💡 Hints <span class="v" id="hintsLeft">3</span></div>
+  <div class="chip">🔥 Streak <span class="v" id="streakVal">0</span></div>
+</div>
+
+<div class="pgwrap">
+  <div class="pgt"><div class="pgb eb" id="pgBar" style="width:0%"></div></div>
+  <div class="pgn" id="pgNum">0/8</div>
+</div>
+
+<div class="gw">
+  <div class="dbadge easy" id="dbadge">🟢 EASY LEVEL</div>
+  <div class="qrow">What one word connects all 4 images?</div>
+
+  <div class="pgrid" id="photoGrid"></div>
+  <div class="arow" id="answerRow"></div>
+  <div class="lbank" id="letterBank"></div>
+
+  <div class="actrow">
+    <button class="abtn acl" onclick="clearAns()">🗑 Clear</button>
+    <button class="abtn ah" id="hintBtn" onclick="useHint()">💡 Hint</button>
+    <button class="abtn ask" onclick="skipQ()">⏭ Skip</button>
+  </div>
+</div>
+
+<!-- Feedback -->
+<div class="fov" id="fov">
+  <div class="fc" id="fc">
+    <span class="femo" id="femo">🎉</span>
+    <div class="ftit" id="ftit">Correct!</div>
+    <div class="fans" id="fans"></div>
+    <div class="ffact" id="ffact"></div>
+    <button class="fnxt" onclick="nextQ()">Next Question ➡️</button>
+  </div>
+</div>
+
+<!-- Win -->
+<div class="ws" id="ws">
+  <div class="wbig">🏆</div>
+  <div class="wh">Level Complete!</div>
+  <div class="wsub" id="wsub">You cracked every puzzle!</div>
+  <div class="wstats">
+    <div class="wst"><span class="wstv" id="wScore">0</span><span class="wstl">Score</span></div>
+    <div class="wst"><span class="wstv" id="wCorr">0</span><span class="wstl">Correct</span></div>
+    <div class="wst"><span class="wstv" id="wHints">0</span><span class="wstl">Hints Used</span></div>
+  </div>
+  <button class="wrbtn" onclick="restart()">🔄 Play Again</button>
+</div>
+
+<script>
+const QS = {
+  easy:[
+    {word:'RAIN',pics:[{e:'🌧️',l:'Rainy sky'},{e:'☔',l:'Umbrella'},{e:'💧',l:'Water drops'},{e:'🌈',l:'Rainbow'}],fact:'💧 Rain is the water cycle in action — ocean water evaporates, forms clouds, then falls back to Earth!'},
+    {word:'TREE',pics:[{e:'🌳',l:'Big tree'},{e:'🍂',l:'Falling leaves'},{e:'🪵',l:'Wood log'},{e:'🐦',l:'Bird on branch'}],fact:'🌳 One tree absorbs ~22 kg of CO₂ per year and produces oxygen for two people!'},
+    {word:'SUN',pics:[{e:'☀️',l:'Bright sun'},{e:'🌻',l:'Sunflower'},{e:'😎',l:'Sunny vibes'},{e:'🔆',l:'Sunlight glow'}],fact:'☀️ The Sun provides almost all of Earth\'s energy — driving weather, ocean currents, and all life!'},
+    {word:'LEAF',pics:[{e:'🍃',l:'Green leaf'},{e:'🍁',l:'Autumn leaf'},{e:'🌿',l:'Plant sprig'},{e:'🍀',l:'Clover'}],fact:'🍃 Leaves make food from sunlight + water + CO₂ through photosynthesis — feeding the whole planet!'},
+    {word:'WIND',pics:[{e:'💨',l:'Blowing air'},{e:'🌬️',l:'Wind face'},{e:'🪁',l:'Kite flying'},{e:'⚡',l:'Wind energy'}],fact:'💨 Wind turbines turn moving air into clean electricity with zero pollution!'},
+    {word:'SEED',pics:[{e:'🌱',l:'Seedling'},{e:'🫘',l:'Bean seed'},{e:'🌾',l:'Grain seeds'},{e:'🌺',l:'Flower bloom'}],fact:'🌱 Some seeds survive for thousands of years! A tiny seed holds everything needed to grow a whole plant.'},
+    {word:'BIRD',pics:[{e:'🐦',l:'Small bird'},{e:'🪺',l:'Nest'},{e:'🥚',l:'Egg'},{e:'🪶',l:'Feather'}],fact:'🐦 Birds are the only living dinosaur descendants! They pollinate plants and spread seeds worldwide.'},
+    {word:'SNOW',pics:[{e:'❄️',l:'Snowflake'},{e:'⛄',l:'Snowman'},{e:'🏔️',l:'Snow mountain'},{e:'🧤',l:'Winter gloves'}],fact:'❄️ No two snowflakes are ever identical! Each is a unique ice crystal formed in clouds.'},
+  ],
+  medium:[
+    {word:'FOREST',pics:[{e:'🌲',l:'Pine trees'},{e:'🦌',l:'Deer'},{e:'🍄',l:'Mushroom'},{e:'🪨',l:'Forest rock'}],fact:'🌲 Forests cover 31% of Earth and are home to 80% of all land animal species!'},
+    {word:'OCEAN',pics:[{e:'🌊',l:'Big wave'},{e:'🐋',l:'Blue whale'},{e:'🐚',l:'Sea shell'},{e:'⛵',l:'Sailing boat'}],fact:'🌊 Oceans cover 71% of Earth and produce more than half its oxygen through tiny phytoplankton!'},
+    {word:'RECYCLE',pics:[{e:'♻️',l:'Recycle symbol'},{e:'🗑️',l:'Waste bin'},{e:'📦',l:'Cardboard box'},{e:'🧴',l:'Plastic bottle'}],fact:'♻️ Recycling one aluminium can saves enough energy to power a TV for 3 hours!'},
+    {word:'SOLAR',pics:[{e:'🔆',l:'Sunlight'},{e:'⚡',l:'Electricity'},{e:'🏠',l:'Solar home'},{e:'🔋',l:'Energy stored'}],fact:'🔆 The Sun sends more energy to Earth in 1 hour than all of humanity uses in an entire year!'},
+    {word:'CORAL',pics:[{e:'🪸',l:'Coral reef'},{e:'🐠',l:'Tropical fish'},{e:'🌊',l:'Clear ocean'},{e:'🐙',l:'Octopus'}],fact:'🪸 Coral reefs cover <1% of the ocean floor but support 25% of all marine life — the rainforests of the sea!'},
+    {word:'DESERT',pics:[{e:'🏜️',l:'Sandy dunes'},{e:'🌵',l:'Cactus'},{e:'🦂',l:'Scorpion'},{e:'☀️',l:'Blazing sun'}],fact:'🌵 The Sahara Desert was once a lush green savanna! Climate shifts turned it into sand over thousands of years.'},
+    {word:'FLOOD',pics:[{e:'🌧️',l:'Heavy rain'},{e:'🏚️',l:'Flooded house'},{e:'🌊',l:'Rising water'},{e:'🚣',l:'Rescue boat'}],fact:'🌧️ Floods are Earth\'s most common natural disaster. Planting trees near rivers helps slow floodwater!'},
+    {word:'OZONE',pics:[{e:'🌍',l:'Earth from space'},{e:'☀️',l:'UV rays'},{e:'🧪',l:'Gas molecule'},{e:'🛡️',l:'Protective shield'}],fact:'🌍 The ozone layer is Earth\'s sunscreen — it blocks harmful UV radiation. Thanks to global action, it is slowly healing!'},
+  ],
+  hard:[
+    {word:'CARBON',pics:[{e:'🏭',l:'Factory smoke'},{e:'🚗',l:'Car exhaust'},{e:'🌡️',l:'Rising temperature'},{e:'💨',l:'CO₂ gas'}],fact:'🏭 CO₂ traps heat in the atmosphere. Reducing carbon emissions is the core challenge of fighting climate change.'},
+    {word:'EROSION',pics:[{e:'🌧️',l:'Rain washing soil'},{e:'💨',l:'Wind blowing sand'},{e:'🏔️',l:'Worn cliffs'},{e:'🏖️',l:'Eroding coast'}],fact:'🏔️ Erosion carved the Grand Canyon over 5–6 million years! Water and wind slowly reshape all of Earth\'s land.'},
+    {word:'GLACIER',pics:[{e:'🧊',l:'Giant ice block'},{e:'🏔️',l:'Ice mountain'},{e:'🌊',l:'Meltwater river'},{e:'🐻‍❄️',l:'Polar habitat'}],fact:'🧊 Glaciers store 69% of Earth\'s fresh water. Melting glaciers raise sea levels and threaten coastal cities worldwide.'},
+    {word:'BIOME',pics:[{e:'🌴',l:'Tropical zone'},{e:'🏔️',l:'Alpine tundra'},{e:'🌾',l:'Grassland prairie'},{e:'🌲',l:'Boreal forest'}],fact:'🌍 Earth has five major biomes — aquatic, desert, forest, grassland & tundra — each a unique living world!'},
+    {word:'COMPOST',pics:[{e:'🍎',l:'Food scraps'},{e:'🪱',l:'Earthworm'},{e:'🌱',l:'Rich soil'},{e:'🌿',l:'Garden plant'}],fact:'🪱 Compost turns kitchen waste into rich soil in 2–6 months, reducing landfill waste and nourishing gardens naturally!'},
+    {word:'TUNDRA',pics:[{e:'🥶',l:'Extreme cold'},{e:'🦊',l:'Arctic fox'},{e:'🌨️',l:'Permafrost'},{e:'🌅',l:'Midnight sun'}],fact:'🥶 Tundra permafrost stores massive carbon. As it thaws due to warming, it releases CO₂ — accelerating climate change!'},
+    {word:'AQUIFER',pics:[{e:'🪨',l:'Underground rock'},{e:'💧',l:'Groundwater'},{e:'🚿',l:'Fresh water tap'},{e:'⛏️',l:'Drilling well'}],fact:'💧 Aquifers hold fresh water underground. Billions rely on them — but overuse is depleting them faster than rain refills them!'},
+    {word:'POLLEN',pics:[{e:'🌸',l:'Flower bloom'},{e:'🐝',l:'Bee collecting'},{e:'🌬️',l:'Wind dispersal'},{e:'🌿',l:'Plant growth'}],fact:'🌸 Without pollen transfer by bees and wind, most fruits and vegetables would disappear from Earth!'},
+  ]
+};
+
+// STATE
+let diff='easy', qs=[], idx=0, score=0, streak=0, hintsLeft=3, hintsUsed=0, correctCount=0;
+let word='', chosen=[], letterPool=[], answered=false;
+
+function shuffle(a){return [...a].sort(()=>Math.random()-.5);}
+
+function switchDiff(d){
+  diff=d;
+  document.querySelectorAll('.dt').forEach(b=>b.classList.remove('active'));
+  document.querySelector('.dt.'+d).classList.add('active');
+  const badge=document.getElementById('dbadge');
+  badge.className='dbadge '+d;
+  badge.textContent=d==='easy'?'🟢 EASY LEVEL':d==='medium'?'🟡 MEDIUM LEVEL':'🔴 HARD LEVEL';
+  const pgb=document.getElementById('pgBar');
+  pgb.className='pgb '+(d==='easy'?'eb':d==='medium'?'mb':'hb');
+  document.getElementById('qTotal').textContent=QS[d].length;
+  startGame();
+}
+
+function startGame(){
+  qs=shuffle(QS[diff]);
+  idx=0;score=0;streak=0;hintsLeft=3;hintsUsed=0;correctCount=0;answered=false;
+  updateHUD();showQ();
+}
+
+function showQ(){
+  answered=false;
+  const q=qs[idx];
+  word=q.word;
+  chosen=Array(word.length).fill(null);
+
+  // Photo grid
+  const grid=document.getElementById('photoGrid');
+  grid.innerHTML='';
+  q.pics.forEach(p=>{
+    const cell=document.createElement('div');
+    cell.className='pc';
+    cell.innerHTML=`<div class="pi"><span class="pe">${p.e}</span><div class="pl">${p.l}</div></div>`;
+    grid.appendChild(cell);
+  });
+
+  // Answer row
+  renderAnswerRow();
+
+  // Letter bank
+  buildLetterBank();
+
+  updateHUD();
+}
+
+function renderAnswerRow(){
+  const row=document.getElementById('answerRow');
+  row.innerHTML='';
+  for(let i=0;i<word.length;i++){
+    const t=document.createElement('div');
+    t.className='at'+(chosen[i]?' filled':'');
+    t.dataset.idx=i;
+    if(chosen[i]) t.textContent=chosen[i].letter;
+    t.onclick=()=>removeLetter(i);
+    row.appendChild(t);
+  }
+}
+
+function buildLetterBank(){
+  // Generate pool: word letters + random extras
+  const extras='AEIOURSTLNBCDFGHJKMPQVWXYZ';
+  const pool=[];
+  word.split('').forEach((c,i)=>pool.push({letter:c,id:'w'+i,used:false}));
+  const needed=Math.max(12,word.length+6);
+  let ei=0;
+  while(pool.length<needed){
+    pool.push({letter:extras[Math.floor(Math.random()*extras.length)],id:'e'+(ei++),used:false});
+  }
+  letterPool=shuffle(pool);
+  renderLetterBank();
+}
+
+function renderLetterBank(){
+  const bank=document.getElementById('letterBank');
+  bank.innerHTML='';
+  letterPool.forEach((item)=>{
+    const b=document.createElement('button');
+    b.className='lb';
+    b.textContent=item.letter;
+    b.disabled=item.used;
+    b.dataset.id=item.id;
+    b.onclick=()=>addLetter(item.id);
+    bank.appendChild(b);
+  });
+}
+
+function addLetter(id){
+  if(answered) return;
+  const slot=chosen.indexOf(null);
+  if(slot===-1) return;
+  const item=letterPool.find(x=>x.id===id);
+  if(!item||item.used) return;
+  item.used=true;
+  chosen[slot]={letter:item.letter,id};
+  renderAnswerRow();
+  renderLetterBank();
+  // Check if complete
+  if(chosen.indexOf(null)===-1) checkAnswer();
+}
+
+function removeLetter(i){
+  if(answered) return;
+  const c=chosen[i];
+  if(!c) return;
+  const item=letterPool.find(x=>x.id===c.id);
+  if(item) item.used=false;
+  chosen[i]=null;
+  renderAnswerRow();
+  renderLetterBank();
+}
+
+function clearAns(){
+  if(answered) return;
+  chosen=Array(word.length).fill(null);
+  letterPool.forEach(x=>x.used=false);
+  renderAnswerRow();
+  renderLetterBank();
+}
+
+function checkAnswer(){
+  answered=true;
+  const guess=chosen.map(c=>c.letter).join('');
+  const correct=guess===word;
+
+  // Animate tiles
+  const tiles=document.querySelectorAll('.at');
+  tiles.forEach(t=>{t.classList.add(correct?'ct':'wt');});
+
+  // Flash photo cells if correct
+  if(correct){
+    document.querySelectorAll('.pc').forEach(c=>c.classList.add('flash'));
+    score+=10+(streak>=2?5:0);
+    streak++;correctCount++;
+    launchConfetti();
+  } else {
+    streak=0;
+  }
+
+  updateHUD();
+  setTimeout(()=>showFeedback(correct),600);
+}
+
+function showFeedback(correct){
+  const q=qs[idx];
+  const fov=document.getElementById('fov');
+  const fc=document.getElementById('fc');
+  document.getElementById('femo').textContent=correct?'🎉':'😅';
+  document.getElementById('ftit').textContent=correct?'Correct! 🌟':'Not Quite...';
+  document.getElementById('ftit').className='ftit '+(correct?'g':'b');
+  document.getElementById('fans').textContent=correct?`The word was "${word}"! Amazing!`:`The answer was "${word}" — keep going!`;
+  document.getElementById('ffact').textContent=q.fact;
+  fc.className='fc '+(correct?'ok':'bad');
+  fov.classList.add('show');
+}
+
+function nextQ(){
+  document.getElementById('fov').classList.remove('show');
+  idx++;
+  if(idx>=qs.length){ showWin(); return; }
+  showQ();
+}
+
+function skipQ(){
+  if(answered) return;
+  answered=true;
+  streak=0;
+  const q=qs[idx];
+  document.getElementById('femo').textContent='⏭️';
+  document.getElementById('ftit').textContent='Skipped!';
+  document.getElementById('ftit').className='ftit b';
+  document.getElementById('fans').textContent=`The answer was "${word}"`;
+  document.getElementById('ffact').textContent=q.fact;
+  document.getElementById('fc').className='fc bad';
+  document.getElementById('fov').classList.add('show');
+  updateHUD();
+}
+
+function useHint(){
+  if(hintsLeft<=0||answered) return;
+  // Reveal first empty slot
+  const slot=chosen.indexOf(null);
+  if(slot===-1) return;
+  const correctLetter=word[slot];
+  // Find unused matching letter in pool
+  let item=letterPool.find(x=>!x.used&&x.letter===correctLetter);
+  if(!item){
+    // Force add
+    item={letter:correctLetter,id:'hint'+slot,used:false};
+    letterPool.push(item);
+    renderLetterBank();
+  }
+  item.used=true;
+  chosen[slot]={letter:item.letter,id:item.id,hint:true};
+  hintsLeft--;hintsUsed++;
+  updateHUD();
+
+  // Mark tile as hint style briefly
+  renderAnswerRow();
+  const tiles=document.querySelectorAll('.at');
+  if(tiles[slot]) tiles[slot].classList.add('ht');
+
+  renderLetterBank();
+  document.getElementById('hintBtn').disabled=hintsLeft<=0;
+  if(chosen.indexOf(null)===-1) checkAnswer();
+}
+
+function updateHUD(){
+  document.getElementById('scoreVal').textContent=score;
+  document.getElementById('qNum').textContent=Math.min(idx+1,qs.length);
+  document.getElementById('qTotal').textContent=qs.length;
+  document.getElementById('hintsLeft').textContent=hintsLeft;
+  document.getElementById('streakVal').textContent=streak;
+  document.getElementById('hintBtn').disabled=hintsLeft<=0;
+  const pct=(idx/qs.length)*100;
+  document.getElementById('pgBar').style.width=pct+'%';
+  document.getElementById('pgNum').textContent=idx+'/'+qs.length;
+}
+
+function showWin(){
+  document.getElementById('wScore').textContent=score;
+  document.getElementById('wCorr').textContent=correctCount;
+  document.getElementById('wHints').textContent=hintsUsed;
+  document.getElementById('wsub').textContent=`You solved all ${qs.length} ${diff} puzzles!`;
+  document.getElementById('ws').classList.add('show');
+  for(let i=0;i<100;i++) setTimeout(()=>dropConfetti(),i*30);
+}
+
+function restart(){
+  document.getElementById('ws').classList.remove('show');
+  startGame();
+}
+
+function launchConfetti(){
+  const cols=['#69f0ae','#ffd740','#00e5ff','#ff6e40','#ce93d8','#fff'];
+  for(let i=0;i<28;i++){
+    setTimeout(()=>{
+      const el=document.createElement('div');
+      el.className='cf';
+      const s=7+Math.random()*8;
+      el.style.cssText=`left:${15+Math.random()*70}%;top:0;background:${cols[Math.floor(Math.random()*cols.length)]};width:${s}px;height:${s}px;border-radius:${Math.random()>.5?'50%':'3px'};animation-duration:${1.4+Math.random()*.8}s;animation-delay:${Math.random()*.2}s;`;
+      document.body.appendChild(el);
+      setTimeout(()=>el.remove(),2400);
+    },i*25);
+  }
+}
+function dropConfetti(){
+  const cols=['#69f0ae','#ffd740','#00e5ff','#ff6e40','#ce93d8','#ff80ab','#fff'];
+  const el=document.createElement('div');
+  el.className='cf';
+  const s=7+Math.random()*10;
+  el.style.cssText=`left:${Math.random()*100}%;top:0;background:${cols[Math.floor(Math.random()*cols.length)]};width:${s}px;height:${s}px;border-radius:${Math.random()>.5?'50%':'3px'};animation-duration:${1.8+Math.random()*1.5}s;`;
+  document.body.appendChild(el);
+  setTimeout(()=>el.remove(),3500);
+}
+
+// Init
+startGame();
+</script>
+</body>
+</html>

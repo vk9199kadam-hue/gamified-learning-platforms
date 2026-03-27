@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Learncha Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Gochi+Hand&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --green: #10b981;
+            --pink: #f43f5e;
+            --yellow: #fbbf24;
+            --bg: #fffbf0;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Gochi Hand', cursive, sans-serif;
+            background: var(--bg);
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .header {
+            margin-bottom: 40px;
+            text-align: center;
+        }
+
+        .logo { font-size: 3.5rem; color: #f43f5e; margin-bottom: 5px; }
+
+        .game-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 30px;
+            max-width: 1200px;
+            width: 100%;
+        }
+
+        .game-card {
+            background: white;
+            border-radius: 30px;
+            padding: 25px;
+            text-align: center;
+            border: 5px dotted #ccc;
+            text-decoration: none;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            cursor: pointer;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+        }
+
+        .game-card:hover { transform: translateY(-10px) rotate(1deg); }
+
+        .game-card.green { border-color: var(--green); }
+        .game-card.pink { border-color: var(--pink); }
+        .game-card.yellow { border-color: var(--yellow); }
+
+        .game-title { font-size: 2.2rem; margin-bottom: 15px; }
+        .green-text { color: var(--green); }
+        .pink-text { color: var(--pink); }
+        .yellow-text { color: var(--yellow); }
+
+        .game-img { width: 100%; height: 220px; object-fit: cover; border-radius: 20px; }
+
+        .overlay {
+            position: fixed;
+            inset: 0;
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+        }
+
+        .login-box {
+            text-align: center;
+            padding: 50px;
+            border: 10px dotted #f43f5e;
+            border-radius: 40px;
+            background: white;
+            width: min(450px, 90vw);
+        }
+
+        input {
+            width: 100%;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 15px;
+            border: 3px solid #eee;
+            font-family: inherit;
+            font-size: 1.3rem;
+        }
+
+        button {
+            background: #f43f5e;
+            color: white;
+            border: none;
+            padding: 18px 40px;
+            border-radius: 50px;
+            font-family: inherit;
+            font-size: 1.5rem;
+            cursor: pointer;
+            width: 100%;
+        }
+
+        footer {
+            margin-top: auto;
+            padding: 30px;
+            width: 100%;
+            background: #87e0f8;
+            text-align: center;
+            color: white;
+            font-size: 1.4rem;
+            border-top: 8px dotted white;
+        }
+    </style>
+</head>
+<body>
+    <div id="overlay" class="overlay">
+        <div class="login-box">
+            <h1 style="color:#f43f5e; font-size: 4rem;">🐻 Learncha</h1>
+            <p style="font-size: 1.3rem; margin-bottom: 20px; color: #666;">Enter your details to start!</p>
+            <input type="text" id="name" placeholder="Your Name">
+            <input type="number" id="age" placeholder="Your Age">
+            <button onclick="login()">Start Adventure &rarr;</button>
+        </div>
+    </div>
+
+    <div class="header">
+        <div class="logo">🐻 Learncha</div>
+        <div style="font-size: 1.5rem; color: #7c7e81;">6ames | DIY | Resources</div>
+    </div>
+
+    <div class="game-grid">
+        <!-- Age 2-5 Game Card -->
+        <a id="card25" class="game-card green" onclick="openGame('game_3_5.html')">
+            <h2 class="game-title green-text">Nature Hero</h2>
+            <img class="game-img" src="https://images.unsplash.com/photo-1543466835-00a7907e9de1?w=400" alt="">
+            <p style="margin-top: 10px;">Age Recommended: 2-5</p>
+        </a>
+
+        <!-- Age 5-8 Game Card -->
+        <a id="card58" class="game-card pink" onclick="openGame('game_5_8.html')">
+            <h2 class="game-title pink-text">4 Pictures One Word</h2>
+            <img class="game-img" src="https://images.unsplash.com/photo-1490750967868-886a50ad92a0?w=400" alt="">
+            <p style="margin-top: 10px;">Age Recommended: 5-8</p>
+        </a>
+
+        <!-- Age 8-11 Game Card -->
+        <a id="card811" class="game-card yellow" onclick="openGame('https://goeroeg.github.io/ld-learn/apps/learn/ld-learn.html')">
+            <h2 class="game-title yellow-text">Math and Climate</h2>
+            <img class="game-img" src="https://images.unsplash.com/photo-1473186578172-c141e6798ee4?w=400" alt="">
+            <p style="margin-top: 10px;">Age Recommended: 8-11</p>
+        </a>
+    </div>
+
+    <footer>Copyright 2024 Learncha. All rights reserved.</footer>
+
+    <script>
+        function login() {
+            const ageInput = document.getElementById('age').value;
+            if (!ageInput) return alert('Please enter your age!');
+            const age = parseInt(ageInput);
+            document.getElementById('overlay').style.display = 'none';
+
+            const c25 = document.getElementById('card25');
+            const c58 = document.getElementById('card58');
+            const c811 = document.getElementById('card811');
+
+            // Visibility logic
+            if (age >= 2 && age <= 5) {
+                c25.style.display = 'block';
+                c58.style.display = 'none';
+                c811.style.display = 'none';
+            } else if (age > 5 && age <= 8) {
+                c25.style.display = 'none';
+                c58.style.display = 'block';
+                c811.style.display = 'none';
+            } else if (age > 8 && age <= 11) {
+                c25.style.display = 'none';
+                c58.style.display = 'none';
+                c811.style.display = 'block';
+            } else {
+                c25.style.display = 'block';
+                c58.style.display = 'block';
+                c811.style.display = 'block';
+            }
+        }
+
+        function openGame(url) {
+            window.location.href = url;
+        }
+    </script>
+</body>
+</html>
