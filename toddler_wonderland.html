@@ -901,6 +901,7 @@
         block.classList.add('lit');
         setTimeout(() => block.classList.remove('lit'), 800);
         speakRobot(`" ${l} " is for ${words[l]}! Great job!`);
+        voiceSpeak(`${l}... ${l} is for ${words[l]}!`);
         addScore(10, e);
       };
 
@@ -940,6 +941,7 @@
         planet.onclick = (e) => {
             playPop(e);
             speakRobot(`Look! There are ${i} sparkly stars orbiting Planet ${i}!`);
+            voiceSpeak(`Number ${i}!`);
             addScore(20, e);
         };
 
@@ -1005,12 +1007,14 @@
             
             card.className = 'vision-card scanning';
             speakRobot(`Scanning ${obj.label}... Discovery in progress!`);
+            voiceSpeak(`Scanning ${obj.label}`);
             
             setTimeout(() => {
                 card.classList.remove('scanning');
                 card.classList.add('scanned');
                 label.innerText = obj.label;
                 speakRobot(`${obj.label}! ${obj.info}`);
+                voiceSpeak(`${obj.label}! ${obj.info}`);
                 addScore(50, e);
             }, 1500);
         };
@@ -1092,6 +1096,16 @@
     robotSpeech.style.animation = 'none';
     void robotSpeech.offsetWidth;
     robotSpeech.style.animation = 'speechPop .4s cubic-bezier(.34,1.56,.64,1)';
+  }
+
+  function voiceSpeak(text) {
+    const speech = new SpeechSynthesisUtterance();
+    speech.text = text;
+    speech.volume = 1;
+    speech.rate = 1;
+    speech.pitch = 1.2; // Slightly higher pitch for a kid-friendly robot voice
+    window.speechSynthesis.cancel(); // Stop any current speaking
+    window.speechSynthesis.speak(speech);
   }
 
   // Canvas
