@@ -2,9 +2,17 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="name" content="IQ Explorer - Educational Fun">
+    <meta name="description" content="Interactive educational platform with age-categorized games boosting student IQ levels.">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Learncha Dashboard</title>
+    <title>Learncha | IQ Explorer - Safe Online Learning for Kids</title>
+    
+    <!-- Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Gochi+Hand&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Favicon -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🐻</text></svg>">
+    
     <style>
         :root {
             --green: #10b981;
@@ -72,7 +80,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            z-index: 100;
+            z-index: 1000;
         }
 
         .login-box {
@@ -82,6 +90,7 @@
             border-radius: 40px;
             background: white;
             width: min(450px, 90vw);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.1);
         }
 
         input {
@@ -92,6 +101,7 @@
             border: 3px solid #eee;
             font-family: inherit;
             font-size: 1.3rem;
+            outline-color: #f43f5e;
         }
 
         button {
@@ -104,7 +114,10 @@
             font-size: 1.5rem;
             cursor: pointer;
             width: 100%;
+            transition: all 0.2s;
         }
+
+        button:hover { background: #e11d48; transform: scale(1.02); }
 
         footer {
             margin-top: auto;
@@ -123,41 +136,50 @@
         <div class="login-box">
             <h1 style="color:#f43f5e; font-size: 4rem;">🐻 Learncha</h1>
             <p style="font-size: 1.3rem; margin-bottom: 20px; color: #666;">Enter your details to start!</p>
-            <input type="text" id="name" placeholder="Your Name">
-            <input type="number" id="age" placeholder="Your Age">
+            <input type="text" id="name" placeholder="What's your name?">
+            <input type="number" id="age" placeholder="How old are you?">
             <button onclick="login()">Start Adventure &rarr;</button>
         </div>
     </div>
 
     <div class="header">
         <div class="logo">🐻 Learncha</div>
-        <div style="font-size: 1.5rem; color: #7c7e81;">6ames | DIY | Resources</div>
+        <div style="font-size: 1.5rem; color: #7c7e81;">6ames | DIY | Resources | Transcribers</div>
     </div>
 
     <div class="game-grid">
-        <!-- Age 2-5 -> Points to game_3_5.html (Copied Easy Game) -->
+        <!-- Age 2-5 -> Nature Hero -->
         <a id="card25" class="game-card green" href="game_3_5.html">
             <h2 class="game-title green-text">Nature Hero</h2>
-            <img class="game-img" src="https://images.unsplash.com/photo-1543466835-00a7907e9de1?w=400" alt="">
-            <p style="margin-top: 10px;">Age Recommended: 2-5</p>
+            <img class="game-img" src="https://images.unsplash.com/photo-1543466835-00a7907e9de1?w=400" alt="Nature Game">
+            <p style="margin-top: 10px; font-size: 1.1rem; color: #9ca3af;">Level: 2-5 Years</p>
         </a>
 
-        <!-- Age 5-8 -> Points to game_5_8.html (Copied 4 Pics Game) -->
+        <!-- Age 2-5 -> Wonder World (New) -->
+        <a id="card25_wonder" class="game-card green" href="toddler_wonderland.html" style="border-color: #FFB3D1;">
+            <h2 class="game-title" style="color: #FF8FAB;">Wonder World</h2>
+            <img class="game-img" src="https://images.unsplash.com/photo-1515488042361-ee00e0ddd4e4?w=400" alt="Magic Kingdom">
+            <p style="margin-top: 10px; font-size: 1.1rem; color: #9ca3af;">Level: 2-5 Years</p>
+        </a>
+
+        <!-- Age 5-8 -> 4 Pictures One Word -->
         <a id="card58" class="game-card pink" href="game_5_8.html">
             <h2 class="game-title pink-text">4 Pictures One Word</h2>
-            <img class="game-img" src="https://images.unsplash.com/photo-1490750967868-886a50ad92a0?w=400" alt="">
-            <p style="margin-top: 10px;">Age Recommended: 5-8</p>
+            <img class="game-img" src="https://images.unsplash.com/photo-1490750967868-886a50ad92a0?w=400" alt="Word Puzzle">
+            <p style="margin-top: 10px; font-size: 1.1rem; color: #9ca3af;">Level: 5-8 Years</p>
         </a>
 
-        <!-- Age 8-11 -> Official Repository Link -->
+        <!-- Age 8-11 -> Math and Climate -->
         <a id="card811" class="game-card yellow" href="https://goeroeg.github.io/ld-learn/apps/learn/ld-learn.html" target="_blank">
             <h2 class="game-title yellow-text">Math and Climate</h2>
-            <img class="game-img" src="https://images.unsplash.com/photo-1473186578172-c141e6798ee4?w=400" alt="">
-            <p style="margin-top: 10px;">Age Recommended: 8-11</p>
+            <img class="game-img" src="https://images.unsplash.com/photo-1473186578172-c141e6798ee4?w=400" alt="STEM Game">
+            <p style="margin-top: 10px; font-size: 1.1rem; color: #9ca3af;">Level: 8-11+ Years</p>
         </a>
     </div>
 
-    <footer>Copyright 2024 Learncha. All rights reserved.</footer>
+    <footer class="footer">
+        © 2024 Learncha STEM Platform. All rights reserved.
+    </footer>
 
     <script>
         function login() {
@@ -167,23 +189,28 @@
             document.getElementById('overlay').style.display = 'none';
 
             const c25 = document.getElementById('card25');
+            const c25w = document.getElementById('card25_wonder');
             const c58 = document.getElementById('card58');
             const c811 = document.getElementById('card811');
 
             if (age >= 2 && age <= 5) {
                 c25.style.display = 'block';
+                c25w.style.display = 'block';
                 c58.style.display = 'none';
                 c811.style.display = 'none';
             } else if (age > 5 && age <= 8) {
                 c25.style.display = 'none';
+                c25w.style.display = 'none';
                 c58.style.display = 'block';
                 c811.style.display = 'none';
             } else if (age > 8 && age <= 11) {
                 c25.style.display = 'none';
+                c25w.style.display = 'none';
                 c58.style.display = 'none';
                 c811.style.display = 'block';
             } else {
                 c25.style.display = 'block';
+                c25w.style.display = 'block';
                 c58.style.display = 'block';
                 c811.style.display = 'block';
             }

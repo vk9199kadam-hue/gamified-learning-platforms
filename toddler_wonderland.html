@@ -1,0 +1,1157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>✨ Wonder World — Magical Learning Kingdom</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --pink: #FFB3D1;
+    --mint: #B8F0E0;
+    --sky: #A8D8FF;
+    --yellow: #FFE999;
+    --lavender: #D4B8FF;
+    --peach: #FFD0A8;
+    --coral: #FF8FAB;
+    --teal: #7FE7CC;
+    --gold: #FFD700;
+    --white: #FFFAFA;
+    --glow-pink: rgba(255,179,209,0.6);
+    --glow-mint: rgba(184,240,224,0.6);
+    --glow-sky: rgba(168,216,255,0.6);
+  }
+
+  * { margin:0; padding:0; box-sizing:border-box; }
+
+  body {
+    font-family: 'Fredoka One', cursive;
+    background: #0a0520;
+    overflow-x: hidden;
+    cursor: none;
+    user-select: none;
+  }
+
+  /* ===== CUSTOM CURSOR ===== */
+  #cursor {
+    width: 32px; height: 32px;
+    background: radial-gradient(circle, #fff 20%, var(--pink) 60%, transparent 80%);
+    border-radius: 50%;
+    position: fixed; pointer-events: none; z-index: 9999;
+    transform: translate(-50%,-50%);
+    transition: width .15s, height .15s;
+    box-shadow: 0 0 20px var(--pink), 0 0 40px rgba(255,179,209,.4);
+    mix-blend-mode: screen;
+  }
+
+  /* ===== SKY & CLOUDS ===== */
+  #sky {
+    position: fixed; inset: 0; z-index: 0;
+    background: radial-gradient(ellipse at 30% 20%, #1a0a3e 0%, #0d1b4b 30%, #050a2e 60%, #000510 100%);
+  }
+
+  /* Stars */
+  .star {
+    position: fixed;
+    border-radius: 50%;
+    background: white;
+    animation: twinkle var(--d,3s) ease-in-out infinite;
+    opacity: 0;
+  }
+  @keyframes twinkle {
+    0%,100% { opacity:0; transform: scale(0.5); }
+    50% { opacity: var(--o,0.8); transform: scale(1.2); }
+  }
+
+  /* ===== CANVAS PARTICLES ===== */
+  #particles-canvas {
+    position: fixed; inset: 0; z-index: 1; pointer-events: none;
+  }
+
+  /* ===== MAIN CONTAINER ===== */
+  #app {
+    position: relative; z-index: 10;
+    min-height: 100vh;
+  }
+
+  /* ===== HEADER / TITLE ===== */
+  #header {
+    text-align: center;
+    padding: 40px 20px 20px;
+    position: relative;
+  }
+  #header h1 {
+    font-size: clamp(2.5rem, 6vw, 5rem);
+    background: linear-gradient(135deg, var(--pink), var(--yellow), var(--mint), var(--sky), var(--lavender));
+    background-size: 300% 300%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: gradientShift 4s ease infinite, titleFloat 3s ease-in-out infinite;
+    filter: drop-shadow(0 0 30px rgba(255,200,255,0.5));
+    letter-spacing: 2px;
+  }
+  @keyframes gradientShift {
+    0%,100% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+  }
+  @keyframes titleFloat {
+    0%,100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+  }
+  .subtitle {
+    font-family: 'Nunito', sans-serif;
+    font-size: clamp(1rem, 2.5vw, 1.4rem);
+    color: rgba(255,255,255,0.6);
+    margin-top: 8px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+  }
+
+  /* ===== CLOUD NAV TABS ===== */
+  #nav {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    padding: 20px;
+    flex-wrap: wrap;
+  }
+  .nav-cloud {
+    padding: 14px 32px;
+    border-radius: 50px;
+    border: 3px solid transparent;
+    background: rgba(255,255,255,0.08);
+    backdrop-filter: blur(20px);
+    color: white;
+    font-family: 'Fredoka One', cursive;
+    font-size: 1.2rem;
+    cursor: pointer;
+    transition: all .4s cubic-bezier(.34,1.56,.64,1);
+    position: relative;
+    overflow: hidden;
+    letter-spacing: 1px;
+  }
+  .nav-cloud::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: var(--bg);
+    opacity: 0;
+    transition: opacity .3s;
+    border-radius: 50px;
+  }
+  .nav-cloud:hover::before, .nav-cloud.active::before { opacity: 0.25; }
+  .nav-cloud:hover, .nav-cloud.active {
+    border-color: var(--color);
+    transform: translateY(-4px) scale(1.05);
+    box-shadow: 0 0 30px var(--glow), 0 10px 40px rgba(0,0,0,.3);
+    color: var(--color);
+  }
+  .nav-cloud .icon { margin-right: 8px; font-size: 1.4rem; }
+
+  /* ===== SECTION PANELS ===== */
+  .section-panel {
+    display: none;
+    padding: 20px;
+    animation: sectionIn .6s cubic-bezier(.34,1.56,.64,1);
+  }
+  .section-panel.active { display: block; }
+  @keyframes sectionIn {
+    from { opacity:0; transform: scale(0.9) translateY(30px); }
+    to { opacity:1; transform: scale(1) translateY(0); }
+  }
+
+  /* ===== SECTION HEADERS ===== */
+  .section-header {
+    text-align: center;
+    margin-bottom: 30px;
+  }
+  .section-title {
+    font-size: clamp(2rem, 5vw, 3.5rem);
+    text-shadow: 0 0 40px currentColor;
+    animation: titleFloat 3s ease-in-out infinite;
+  }
+  .section-desc {
+    font-family: 'Nunito', sans-serif;
+    font-size: 1rem;
+    opacity: 0.6;
+    color: white;
+    margin-top: 6px;
+  }
+
+  /* ===== GLASS CARD ===== */
+  .glass-card {
+    background: rgba(255,255,255,0.06);
+    backdrop-filter: blur(30px);
+    border-radius: 30px;
+    border: 1px solid rgba(255,255,255,0.12);
+    padding: 30px;
+    box-shadow: 0 20px 60px rgba(0,0,0,.3), inset 0 1px 0 rgba(255,255,255,0.15);
+    position: relative;
+    overflow: hidden;
+  }
+  .glass-card::before {
+    content: '';
+    position: absolute;
+    top: -50%; left: -50%;
+    width: 200%; height: 200%;
+    background: conic-gradient(from 0deg, transparent 0%, rgba(255,255,255,0.03) 30%, transparent 60%);
+    animation: shimmer 8s linear infinite;
+  }
+  @keyframes shimmer { to { transform: rotate(360deg); } }
+
+  /* ===========================
+     SECTION 1: ABC WONDERLAND
+  =========================== */
+  #abc-section .section-title { color: var(--pink); }
+
+  .alphabet-castle {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+    gap: 16px;
+    padding: 20px;
+  }
+
+  .letter-block {
+    aspect-ratio: 1;
+    border-radius: 24px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: clamp(2rem, 4vw, 2.8rem);
+    cursor: pointer;
+    position: relative;
+    transition: all .3s cubic-bezier(.34,1.56,.64,1);
+    animation: letterFloat var(--delay, 3s) ease-in-out infinite;
+    box-shadow: 0 8px 32px rgba(0,0,0,.3), inset 0 2px 0 rgba(255,255,255,0.4), inset 0 -3px 0 rgba(0,0,0,0.15);
+    overflow: visible;
+  }
+  .letter-block::after {
+    content: '';
+    position: absolute; inset: 0;
+    border-radius: 24px;
+    background: linear-gradient(135deg, rgba(255,255,255,0.4) 0%, transparent 50%);
+    pointer-events: none;
+  }
+  .letter-block:hover {
+    transform: translateY(-12px) scale(1.15) rotateY(15deg);
+    box-shadow: 0 20px 60px rgba(0,0,0,.4), 0 0 40px var(--glow);
+    z-index: 10;
+  }
+  .letter-block.popped {
+    animation: letterPop .5s cubic-bezier(.34,1.56,.64,1) forwards;
+  }
+  @keyframes letterPop {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.4) rotateY(180deg); }
+    100% { transform: scale(1.15) rotateY(0deg) translateY(-12px); }
+  }
+  @keyframes letterFloat {
+    0%,100% { transform: translateY(0) rotate(-1deg); }
+    50% { transform: translateY(-8px) rotate(1deg); }
+  }
+
+  /* Speech bubble */
+  .speech-bubble {
+    position: absolute;
+    top: -70px; left: 50%;
+    transform: translateX(-50%) scale(0);
+    background: white;
+    border-radius: 16px;
+    padding: 8px 14px;
+    font-size: 0.75rem;
+    white-space: nowrap;
+    color: #333;
+    font-family: 'Nunito', sans-serif;
+    font-weight: 700;
+    z-index: 20;
+    pointer-events: none;
+    box-shadow: 0 4px 20px rgba(0,0,0,.2);
+    transition: transform .3s cubic-bezier(.34,1.56,.64,1);
+  }
+  .speech-bubble::after {
+    content: '';
+    position: absolute;
+    bottom: -8px; left: 50%;
+    transform: translateX(-50%);
+    border: 8px solid transparent;
+    border-top-color: white;
+    border-bottom: 0;
+  }
+  .letter-block:hover .speech-bubble { transform: translateX(-50%) scale(1); }
+
+  /* Led pulse overlay */
+  .letter-block.lit {
+    animation: ledPulse 0.8s ease-in-out, letterFloat var(--delay,3s) ease-in-out infinite 0.8s;
+  }
+  @keyframes ledPulse {
+    0%,100% { box-shadow: 0 8px 32px rgba(0,0,0,.3), 0 0 10px var(--glow); }
+    50% { box-shadow: 0 8px 32px rgba(0,0,0,.3), 0 0 60px var(--glow), 0 0 100px var(--glow); }
+  }
+
+  /* ===========================
+     SECTION 2: NUMBER NEXUS
+  =========================== */
+  #number-section .section-title { color: var(--sky); }
+
+  .number-cosmos {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 24px;
+    padding: 20px;
+  }
+
+  .number-planet {
+    aspect-ratio: 1;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer;
+    position: relative;
+    transition: all .4s cubic-bezier(.34,1.56,.64,1);
+    animation: planetOrbit var(--orbit, 6s) ease-in-out infinite;
+  }
+  .number-planet:hover {
+    transform: scale(1.2);
+    z-index: 10;
+  }
+  .planet-ring {
+    position: absolute;
+    width: 140%; height: 30%;
+    border-radius: 50%;
+    border: 3px solid rgba(255,255,255,0.25);
+    box-shadow: 0 0 20px rgba(255,255,255,0.1);
+    animation: ringRotate var(--ring-speed, 4s) linear infinite;
+    pointer-events: none;
+  }
+  @keyframes ringRotate { to { transform: rotateX(75deg) rotate(360deg); } }
+
+  .number-digit {
+    font-size: clamp(3rem, 6vw, 4.5rem);
+    color: white;
+    text-shadow: 0 0 30px rgba(255,255,255,0.8), 0 2px 8px rgba(0,0,0,.4);
+    z-index: 2;
+    line-height: 1;
+  }
+
+  .orbiting-obj {
+    position: absolute;
+    font-size: 1.4rem;
+    animation: objectOrbit var(--speed, 3s) linear infinite;
+    transform-origin: var(--radius, 90px) 0;
+    top: 50%; left: 50%;
+    margin-top: -0.7rem; margin-left: calc(0px - var(--radius, 90px));
+    filter: drop-shadow(0 0 8px rgba(255,255,255,0.6));
+  }
+  @keyframes objectOrbit {
+    from { transform: rotate(var(--start, 0deg)) translateX(var(--radius, 90px)); }
+    to { transform: rotate(calc(var(--start, 0deg) + 360deg)) translateX(var(--radius, 90px)); }
+  }
+  @keyframes planetOrbit {
+    0%,100% { transform: translateY(0); }
+    50% { transform: translateY(-12px); }
+  }
+
+  /* Abacus */
+  .abacus-container {
+    margin-top: 30px;
+    padding: 24px;
+  }
+  .abacus-title {
+    text-align: center;
+    color: var(--yellow);
+    font-size: 1.8rem;
+    margin-bottom: 20px;
+    text-shadow: 0 0 20px var(--yellow);
+  }
+  .abacus-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 14px;
+    padding: 8px 16px;
+    background: rgba(255,255,255,0.05);
+    border-radius: 50px;
+    position: relative;
+  }
+  .abacus-rod {
+    position: absolute;
+    left: 20px; right: 20px; height: 3px;
+    background: linear-gradient(90deg, rgba(255,255,255,0.1), rgba(255,255,255,0.3), rgba(255,255,255,0.1));
+    border-radius: 2px;
+    z-index: 0;
+  }
+  .abacus-bead {
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    cursor: pointer;
+    position: relative; z-index: 1;
+    transition: all .3s cubic-bezier(.34,1.56,.64,1);
+    box-shadow: 0 4px 15px rgba(0,0,0,.3), inset 0 2px 0 rgba(255,255,255,0.5);
+    flex-shrink: 0;
+  }
+  .abacus-bead:hover { transform: scale(1.3) translateY(-5px); }
+  .abacus-bead.active { transform: scale(1.15); box-shadow: 0 0 20px currentColor, 0 4px 15px rgba(0,0,0,.3); }
+  .abacus-bead.falling {
+    animation: beadFall .6s cubic-bezier(.34,1.56,.64,1);
+  }
+  @keyframes beadFall {
+    0% { transform: translateY(-40px) scale(0.5); opacity:0; }
+    100% { transform: translateY(0) scale(1); opacity:1; }
+  }
+
+  /* ===========================
+     SECTION 3: VISION LAB
+  =========================== */
+  #vision-section .section-title { color: var(--mint); }
+
+  .vision-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 20px;
+    padding: 20px;
+  }
+
+  .vision-card {
+    aspect-ratio: 1;
+    border-radius: 24px;
+    background: rgba(255,255,255,0.06);
+    border: 2px solid rgba(255,255,255,0.1);
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    cursor: pointer;
+    transition: all .4s cubic-bezier(.34,1.56,.64,1);
+    position: relative;
+    overflow: hidden;
+    gap: 10px;
+  }
+  .vision-card:hover { transform: translateY(-8px) scale(1.05); }
+  .vision-card.scanning {
+    animation: scanEffect 1.5s ease-in-out;
+  }
+
+  .scan-beam {
+    position: absolute;
+    top: -100%; left: 0; right: 0;
+    height: 6px;
+    background: linear-gradient(90deg, transparent, rgba(127,231,204,0.8), rgba(127,231,204,1), rgba(127,231,204,0.8), transparent);
+    box-shadow: 0 0 20px rgba(127,231,204,0.8), 0 0 40px rgba(127,231,204,0.4);
+    transition: none;
+    pointer-events: none;
+  }
+  .vision-card.scanning .scan-beam {
+    animation: beamScan 1.5s ease-in-out;
+  }
+  @keyframes beamScan {
+    0% { top: -10px; }
+    100% { top: 110%; }
+  }
+  @keyframes scanEffect {
+    0%,100% { border-color: rgba(255,255,255,0.1); box-shadow: none; }
+    50% { border-color: var(--teal); box-shadow: 0 0 40px rgba(127,231,204,0.5); }
+  }
+
+  .vision-emoji { font-size: 3.5rem; transition: transform .3s; filter: drop-shadow(0 0 10px rgba(255,255,255,0.3)); }
+  .vision-card:hover .vision-emoji { transform: scale(1.2) rotate(5deg); }
+  .vision-label {
+    font-size: 1rem;
+    color: white;
+    text-shadow: 0 0 10px rgba(255,255,255,0.5);
+  }
+  .vision-tag {
+    font-size: 0.7rem;
+    font-family: 'Nunito', sans-serif;
+    background: rgba(127,231,204,0.2);
+    border: 1px solid rgba(127,231,204,0.4);
+    color: var(--teal);
+    padding: 4px 12px;
+    border-radius: 20px;
+    opacity: 0;
+    transform: translateY(10px);
+    transition: all .3s .1s;
+  }
+  .vision-card.scanned .vision-tag { opacity: 1; transform: translateY(0); }
+  .vision-card.scanned { border-color: rgba(127,231,204,0.4); }
+
+  /* AI Companion */
+  .ai-companion {
+    text-align: center;
+    padding: 30px 20px;
+  }
+  .robot-wrap {
+    display: inline-block;
+    position: relative;
+    animation: robotFloat 3s ease-in-out infinite;
+  }
+  @keyframes robotFloat {
+    0%,100% { transform: translateY(0) rotate(-2deg); }
+    50% { transform: translateY(-15px) rotate(2deg); }
+  }
+  .robot-body {
+    font-size: clamp(4rem, 10vw, 7rem);
+    filter: drop-shadow(0 0 30px rgba(127,231,204,0.6));
+    display: block;
+  }
+  .robot-speech {
+    position: absolute;
+    top: -20px; left: 110%;
+    background: white;
+    border-radius: 20px 20px 20px 4px;
+    padding: 12px 18px;
+    font-size: 0.9rem;
+    color: #333;
+    white-space: nowrap;
+    font-family: 'Nunito', sans-serif;
+    font-weight: 700;
+    box-shadow: 0 4px 20px rgba(0,0,0,.2);
+    min-width: 200px;
+    animation: speechPop .4s cubic-bezier(.34,1.56,.64,1);
+  }
+  @keyframes speechPop {
+    from { transform: scale(0); }
+    to { transform: scale(1); }
+  }
+
+  /* ===== FOOTER / PARENT DASH ===== */
+  #parent-dash {
+    margin: 30px 20px;
+  }
+  .dash-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 16px;
+    margin-top: 20px;
+  }
+  .dash-stat {
+    padding: 20px;
+    border-radius: 20px;
+    text-align: center;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.1);
+    transition: transform .3s;
+  }
+  .dash-stat:hover { transform: translateY(-4px); }
+  .dash-stat .stat-icon { font-size: 2.5rem; display: block; margin-bottom: 8px; }
+  .dash-stat .stat-val {
+    font-size: 2rem;
+    color: white;
+    text-shadow: 0 0 15px var(--color);
+  }
+  .dash-stat .stat-label {
+    font-size: 0.8rem;
+    font-family: 'Nunito', sans-serif;
+    color: rgba(255,255,255,0.5);
+    margin-top: 4px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  /* ===== PROGRESS BAR ===== */
+  .progress-bar-wrap {
+    background: rgba(255,255,255,0.08);
+    border-radius: 20px;
+    height: 10px;
+    margin: 10px 0;
+    overflow: hidden;
+  }
+  .progress-bar {
+    height: 100%;
+    border-radius: 20px;
+    background: linear-gradient(90deg, var(--from), var(--to));
+    transition: width 1s cubic-bezier(.34,1.56,.64,1);
+    box-shadow: 0 0 10px var(--from);
+  }
+
+  /* ===== RIPPLE EFFECT ===== */
+  .ripple {
+    position: fixed;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(255,255,255,0.6), transparent 70%);
+    pointer-events: none;
+    z-index: 9998;
+    animation: rippleAnim .8s ease-out forwards;
+  }
+  @keyframes rippleAnim {
+    0% { width:0; height:0; opacity:0.8; transform: translate(-50%,-50%) scale(0); }
+    100% { width:120px; height:120px; opacity:0; transform: translate(-50%,-50%) scale(1); }
+  }
+
+  /* ===== FLOWER BLOOM ===== */
+  .bloom {
+    position: fixed;
+    pointer-events: none;
+    z-index: 9997;
+    font-size: 1.8rem;
+    animation: bloomAnim 1s ease-out forwards;
+  }
+  @keyframes bloomAnim {
+    0% { opacity:1; transform: translate(-50%,-50%) scale(0) rotate(0deg); }
+    60% { opacity:1; transform: translate(-50%,-120%) scale(1.3) rotate(180deg); }
+    100% { opacity:0; transform: translate(-50%,-200%) scale(0.8) rotate(360deg); }
+  }
+
+  /* ===== RAINBOW SLIDE TRANSITION ===== */
+  .rainbow-slide {
+    position: fixed; inset: 0; z-index: 9990;
+    background: linear-gradient(135deg, var(--pink), var(--yellow), var(--mint), var(--sky), var(--lavender));
+    background-size: 400% 400%;
+    animation: gradientShift 1s ease infinite;
+    pointer-events: none;
+    opacity: 0;
+  }
+  .rainbow-slide.active {
+    animation: rainbowFlash .5s ease-out forwards;
+  }
+  @keyframes rainbowFlash {
+    0% { opacity: 0.8; }
+    100% { opacity: 0; }
+  }
+
+  /* ===== TOOLTIP / SCORE POPUP ===== */
+  .score-pop {
+    position: fixed;
+    color: var(--gold);
+    font-size: 2rem;
+    pointer-events: none;
+    z-index: 9995;
+    text-shadow: 0 0 20px var(--gold);
+    animation: scoreFly 1.2s ease-out forwards;
+  }
+  @keyframes scoreFly {
+    0% { opacity:1; transform: translate(-50%,-50%) scale(0.5); }
+    50% { opacity:1; transform: translate(-50%,-120%) scale(1.2); }
+    100% { opacity:0; transform: translate(-50%,-200%) scale(0.8); }
+  }
+
+  /* ===== MUSICAL NOTES (ambient) ===== */
+  .music-note {
+    position: fixed;
+    pointer-events: none;
+    z-index: 5;
+    font-size: 1.4rem;
+    opacity: 0;
+    animation: noteFloat var(--dur, 4s) ease-in-out var(--del, 0s) infinite;
+    color: var(--col, white);
+    filter: drop-shadow(0 0 8px currentColor);
+  }
+  @keyframes noteFloat {
+    0% { opacity:0; transform: translateY(0) rotate(0deg); }
+    20% { opacity:0.6; }
+    80% { opacity:0.4; }
+    100% { opacity:0; transform: translateY(-80px) translateX(var(--dx,20px)) rotate(var(--rot,30deg)); }
+  }
+
+  /* ===== CLOUD PORTAL ===== */
+  .cloud-portal {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    margin: 20px 0;
+    flex-wrap: wrap;
+  }
+  .portal {
+    width: 80px; height: 80px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 2rem;
+    cursor: pointer;
+    animation: portalSpin 10s linear infinite;
+    transition: transform .3s;
+    box-shadow: 0 0 30px var(--glow), inset 0 0 20px rgba(255,255,255,0.1);
+    border: 3px solid rgba(255,255,255,0.3);
+  }
+  .portal:hover { transform: scale(1.2); }
+  @keyframes portalSpin {
+    to { filter: hue-rotate(360deg); }
+  }
+
+  /* ===== SCROLLBAR ===== */
+  ::-webkit-scrollbar { width: 8px; }
+  ::-webkit-scrollbar-track { background: rgba(255,255,255,0.05); border-radius: 4px; }
+  ::-webkit-scrollbar-thumb { background: var(--pink); border-radius: 4px; }
+
+  /* ===== RESPONSIVE ===== */
+  @media (max-width: 600px) {
+    .alphabet-castle { grid-template-columns: repeat(auto-fill, minmax(70px, 1fr)); gap: 10px; }
+    .number-cosmos { grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); }
+    .vision-grid { grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); }
+    .robot-speech { display: none; }
+  }
+
+  /* ===== LOADING SCREEN ===== */
+  #loader {
+    position: fixed; inset: 0; z-index: 99999;
+    background: #0a0520;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    gap: 24px;
+    transition: opacity .8s, visibility .8s;
+  }
+  #loader.hidden { opacity: 0; visibility: hidden; }
+  .loader-emoji { font-size: 5rem; animation: loaderSpin 2s ease-in-out infinite; }
+  @keyframes loaderSpin {
+    0%,100% { transform: rotate(-10deg) scale(1); }
+    50% { transform: rotate(10deg) scale(1.15); }
+  }
+  .loader-text {
+    font-size: 1.8rem;
+    background: linear-gradient(135deg, var(--pink), var(--mint), var(--sky));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: gradientShift 2s ease infinite;
+  }
+  .loader-bar-outer {
+    width: 250px; height: 8px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 4px; overflow: hidden;
+  }
+  .loader-bar-inner {
+    height: 100%;
+    background: linear-gradient(90deg, var(--pink), var(--sky), var(--mint));
+    border-radius: 4px;
+    animation: loaderFill 2s ease-out forwards;
+    box-shadow: 0 0 15px var(--sky);
+  }
+  @keyframes loaderFill { from { width: 0%; } to { width: 100%; } }
+</style>
+</head>
+<body>
+
+<!-- LOADER -->
+<div id="loader">
+  <div class="loader-emoji">✨</div>
+  <div class="loader-text">Building Your Magic World…</div>
+  <div class="loader-bar-outer"><div class="loader-bar-inner"></div></div>
+</div>
+
+<!-- CUSTOM CURSOR -->
+<div id="cursor"></div>
+
+<!-- PARTICLES -->
+<canvas id="particles-canvas"></canvas>
+
+<!-- SKY BACKGROUND -->
+<div id="sky"></div>
+
+<!-- RAINBOW TRANSITION -->
+<div class="rainbow-slide" id="rainbow-slide"></div>
+
+<!-- MUSIC NOTES (ambient) -->
+<div class="music-note" style="left:5%;top:20%;--dur:5s;--del:0s;--col:#FFB3D1;--dx:-10px;--rot:-20deg">♪</div>
+<div class="music-note" style="left:15%;top:60%;--dur:6s;--del:1s;--col:#A8D8FF;--dx:15px;--rot:25deg">♫</div>
+<div class="music-note" style="left:80%;top:30%;--dur:4.5s;--del:2s;--col:#B8F0E0;--dx:-20px;--rot:10deg">♩</div>
+<div class="music-note" style="left:90%;top:70%;--dur:5.5s;--del:0.5s;--col:#FFE999;--dx:10px;--rot:-30deg">♬</div>
+<div class="music-note" style="left:50%;top:10%;--dur:7s;--del:1.5s;--col:#D4B8FF;--dx:25px;--rot:15deg">♪</div>
+
+<!-- MAIN APP -->
+<div id="app">
+  <!-- HEADER -->
+  <div id="header">
+    <h1>✨ Wonder World ✨</h1>
+    <p class="subtitle">A Magical Kingdom of Learning</p>
+  </div>
+
+  <!-- NAV -->
+  <nav id="nav">
+    <button class="nav-cloud active" data-section="abc"
+      style="--bg:linear-gradient(135deg,#FFB3D1,#FFD0A8);--color:#FFB3D1;--glow:rgba(255,179,209,0.5)">
+      <span class="icon">🏰</span>ABC Wonderland
+    </button>
+    <button class="nav-cloud" data-section="number"
+      style="--bg:linear-gradient(135deg,#A8D8FF,#D4B8FF);--color:#A8D8FF;--glow:rgba(168,216,255,0.5)">
+      <span class="icon">🪐</span>Number Nexus
+    </button>
+    <button class="nav-cloud" data-section="vision"
+      style="--bg:linear-gradient(135deg,#B8F0E0,#A8D8FF);--color:#B8F0E0;--glow:rgba(184,240,224,0.5)">
+      <span class="icon">🔬</span>Vision Lab
+    </button>
+  </nav>
+
+  <!-- ====================== ABC WONDERLAND ====================== -->
+  <div id="abc-section" class="section-panel active">
+    <div class="section-header">
+      <div class="section-title">🏰 ABC Wonderland</div>
+      <div class="section-desc">Touch each magical letter to discover wonders!</div>
+    </div>
+    <div class="glass-card">
+      <div class="alphabet-castle" id="alphabet-grid"></div>
+    </div>
+  </div>
+
+  <!-- ====================== NUMBER NEXUS ====================== -->
+  <div id="number-section" class="section-panel">
+    <div class="section-header">
+      <div class="section-title">🪐 Number Nexus</div>
+      <div class="section-desc">Explore the cosmic counting universe!</div>
+    </div>
+    <div class="glass-card">
+      <div class="number-cosmos" id="number-grid"></div>
+    </div>
+    <div class="glass-card abacus-container" style="margin-top:24px">
+      <div class="abacus-title">✨ Magic Counting Beads</div>
+      <div id="abacus-rows"></div>
+    </div>
+  </div>
+
+  <!-- ====================== VISION LAB ====================== -->
+  <div id="vision-section" class="section-panel">
+    <div class="section-header">
+      <div class="section-title">🔬 Vision Lab</div>
+      <div class="section-desc">Scan objects and discover their secrets!</div>
+    </div>
+    <div class="glass-card">
+      <div class="vision-grid" id="vision-grid"></div>
+    </div>
+  </div>
+
+  <!-- ====================== PARENT DASH ====================== -->
+  <footer id="parent-dash" class="glass-card">
+    <div style="display:flex; justify-content:space-between; align-items:center">
+      <h3 style="color:white; letter-spacing:1px">🌟 Magical Progress</h3>
+      <div style="color:var(--mint); font-size:0.9rem">PARENT DASHBOARD</div>
+    </div>
+    <div class="dash-grid">
+      <div class="dash-stat" style="--color:var(--pink)">
+        <span class="stat-icon">🎓</span>
+        <div class="stat-val" id="iq-val">105</div>
+        <div class="stat-label">WONDER IQ</div>
+      </div>
+      <div class="dash-stat" style="--color:var(--sky)">
+        <span class="stat-icon">🕒</span>
+        <div class="stat-val">12m</div>
+        <div class="stat-label">PLAY TIME</div>
+      </div>
+      <div class="dash-stat" style="--color:var(--yellow)">
+        <span class="stat-icon">🏅</span>
+        <div class="stat-val">8</div>
+        <div class="stat-label">BADGES</div>
+      </div>
+    </div>
+    <div style="margin-top:20px">
+      <div style="color:white; font-size:0.8rem; margin-bottom:5px">MAGIC LEVEL PROGRESS</div>
+      <div class="progress-bar-wrap">
+        <div class="progress-bar" style="width:65%; --from:var(--pink); --to:var(--lavender)"></div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- AI COMPONION -->
+  <div class="ai-companion">
+    <div class="robot-wrap">
+      <span class="robot-body">🤖</span>
+      <div class="robot-speech" id="robot-speech">Hello! I'm Sparky. Let's play together! ✨</div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  // 1. DATA
+  const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
+  const words = {
+    A:"Apple 🍎", B:"Ball ⚽", C:"Cat 🐱", D:"Dog 🐶", E:"Egg 🥚", F:"Fish 🐟", G:"Giraffe 🦒", H:"House 🏠", I:"Ice 🧊", J:"Jelly 🍮", K:"Kite 🪁", L:"Lion 🦁", M:"Moon 🌙", N:"Nose 👃", O:"Orange 🍊", P:"Panda 🐼", Q:"Queen 👑", R:"Rabbit 🐰", S:"Sun ☀️", T:"Tiger 🐯", U:"Umbrella ☂️", V:"Van 🚐", W:"Wind 🌬️", X:"Xylophone 🎹", Y:"Yo-yo 🪀", Z:"Zebra 🦓"
+  };
+  const objects = [
+    {emoji:"🍎", label:"Apple", tag:"FRUIT", info:"Crunchy and sweet!"},
+    {emoji:"🐶", label:"Dog", tag:"ANIMAL", info:"Man's best friend!"},
+    {emoji:"💧", label:"Water", tag:"NATURE", info:"Stay hydrated!"},
+    {emoji:"🌙", label:"Moon", tag:"SPACE", info:"Glows at night!"},
+    {emoji:"🧸", label:"Teddy", tag:"TOY", info:"Soft and cuddly!"},
+    {emoji:"🥕", label:"Carrot", tag:"VEGGIE", info:"Good for eyes!"}
+  ];
+
+  // Colors
+  const colors = ["#FFB3D1", "#B8F0E0", "#A8D8FF", "#FFE999", "#D4B8FF", "#FFD0A8"];
+
+  // 2. DOM ELEMENTS
+  const alphabetGrid = document.getElementById('alphabet-grid');
+  const numberGrid = document.getElementById('number-grid');
+  const abacusRows = document.getElementById('abacus-rows');
+  const visionGrid = document.getElementById('vision-grid');
+  const robotSpeech = document.getElementById('robot-speech');
+  const cursor = document.getElementById('cursor');
+
+  // 3. INITIALIZATION
+  window.onload = () => {
+    initAlphabet();
+    initNumbers();
+    initAbacus();
+    initVision();
+    initParticles();
+    createStars();
+    
+    setTimeout(() => {
+      document.getElementById('loader').classList.add('hidden');
+    }, 2000);
+  };
+
+  // --- Alphabet Castle ---
+  function initAlphabet() {
+    letters.forEach((l, i) => {
+      const block = document.createElement('div');
+      block.className = 'letter-block';
+      block.innerText = l;
+      block.style.backgroundColor = colors[i % colors.length];
+      block.style.setProperty('--glow', colors[i % colors.length]);
+      block.style.setProperty('--delay', (2 + Math.random() * 2) + 's');
+      
+      const speech = document.createElement('div');
+      speech.className = 'speech-bubble';
+      speech.innerText = words[l];
+      block.appendChild(speech);
+
+      block.onclick = (e) => {
+        playPop(e);
+        block.classList.add('lit');
+        setTimeout(() => block.classList.remove('lit'), 800);
+        speakRobot(`" ${l} " is for ${words[l]}! Great job!`);
+        addScore(10, e);
+      };
+
+      alphabetGrid.appendChild(block);
+    });
+  }
+
+  // --- Number Nexus ---
+  function initNumbers() {
+    for(let i=1; i<=10; i++) {
+        const planet = document.createElement('div');
+        planet.className = 'number-planet';
+        planet.style.backgroundColor = colors[i % colors.length];
+        planet.style.setProperty('--orbit', (5 + Math.random()*3) + 's');
+        
+        const ring = document.createElement('div');
+        ring.className = 'planet-ring';
+        ring.style.setProperty('--ring-speed', (3 + Math.random()*2) + 's');
+        planet.appendChild(ring);
+
+        const digit = document.createElement('div');
+        digit.className = 'number-digit';
+        digit.innerText = i;
+        planet.appendChild(digit);
+
+        // Orbiting small objects
+        for(let j=0; j<i; j++) {
+            const obj = document.createElement('div');
+            obj.className = 'orbiting-obj';
+            obj.innerText = '✨';
+            obj.style.setProperty('--radius', (60 + Math.random()*30) + 'px');
+            obj.style.setProperty('--speed', (2 + Math.random()*4) + 's');
+            obj.style.setProperty('--start', (j * (360/i)) + 'deg');
+            planet.appendChild(obj);
+        }
+
+        planet.onclick = (e) => {
+            playPop(e);
+            speakRobot(`Look! There are ${i} sparkly stars orbiting Planet ${i}!`);
+            addScore(20, e);
+        };
+
+        numberGrid.appendChild(planet);
+    }
+  }
+
+  function initAbacus() {
+    for(let i=0; i<3; i++) {
+        const row = document.createElement('div');
+        row.className = 'abacus-row';
+        const rod = document.createElement('div');
+        rod.className = 'abacus-rod';
+        row.appendChild(rod);
+
+        for(let j=0; j<10; j++) {
+            const bead = document.createElement('div');
+            bead.className = 'abacus-bead';
+            bead.style.backgroundColor = colors[j % colors.length];
+            bead.style.color = colors[j % colors.length];
+            
+            bead.onclick = (e) => {
+                bead.classList.toggle('active');
+                if(bead.classList.contains('active')) {
+                    bead.classList.add('falling');
+                    setTimeout(() => bead.classList.remove('falling'), 600);
+                    addScore(5, e);
+                }
+            };
+            row.appendChild(bead);
+        }
+        abacusRows.appendChild(row);
+    }
+  }
+
+  // --- Vision Lab ---
+  function initVision() {
+    objects.forEach((obj, i) => {
+        const card = document.createElement('div');
+        card.className = 'vision-card';
+        
+        const beam = document.createElement('div');
+        beam.className = 'scan-beam';
+        card.appendChild(beam);
+
+        const emoji = document.createElement('div');
+        emoji.className = 'vision-emoji';
+        emoji.innerText = obj.emoji;
+        card.appendChild(emoji);
+
+        const label = document.createElement('div');
+        label.className = 'vision-label';
+        label.innerText = '???';
+        card.appendChild(label);
+
+        const tag = document.createElement('div');
+        tag.className = 'vision-tag';
+        tag.innerText = obj.tag;
+        card.appendChild(tag);
+
+        card.onclick = (e) => {
+            if(card.classList.contains('scanning')) return;
+            
+            card.className = 'vision-card scanning';
+            speakRobot(`Scanning ${obj.label}... Discovery in progress!`);
+            
+            setTimeout(() => {
+                card.classList.remove('scanning');
+                card.classList.add('scanned');
+                label.innerText = obj.label;
+                speakRobot(`${obj.label}! ${obj.info}`);
+                addScore(50, e);
+            }, 1500);
+        };
+
+        visionGrid.appendChild(card);
+    });
+  }
+
+  // --- Interactions ---
+
+  // Nav
+  document.querySelectorAll('.nav-cloud').forEach(btn => {
+    btn.onclick = () => {
+        const target = btn.dataset.section;
+        
+        // Rainbow slide
+        const r = document.getElementById('rainbow-slide');
+        r.classList.add('active');
+        setTimeout(() => r.classList.remove('active'), 500);
+
+        document.querySelectorAll('.nav-cloud').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+
+        document.querySelectorAll('.section-panel').forEach(p => p.classList.remove('active'));
+        document.getElementById(`${target}-section`).classList.add('active');
+        
+        speakRobot(`Entering ${btn.innerText.trim()}! So exciting!`);
+    };
+  });
+
+  // Cursor
+  document.addEventListener('mousemove', (e) => {
+    cursor.style.left = e.clientX + 'px';
+    cursor.style.top = e.clientY + 'px';
+  });
+
+  document.addEventListener('mousedown', () => {
+    cursor.style.width = '24px';
+    cursor.style.height = '24px';
+  });
+  document.addEventListener('mouseup', () => {
+    cursor.style.width = '32px';
+    cursor.style.height = '32px';
+  });
+
+  // Effects
+  function playPop(e) {
+    const ripple = document.createElement('div');
+    ripple.className = 'ripple';
+    ripple.style.left = e.clientX + 'px';
+    ripple.style.top = e.clientY + 'px';
+    document.body.appendChild(ripple);
+    setTimeout(() => ripple.remove(), 1000);
+
+    const bloom = document.createElement('div');
+    bloom.className = 'bloom';
+    bloom.innerHTML = ['🌸','✨','🌈','⭐'][Math.floor(Math.random()*4)];
+    bloom.style.left = e.clientX + 'px';
+    bloom.style.top = e.clientY + 'px';
+    document.body.appendChild(bloom);
+    setTimeout(() => bloom.remove(), 1000);
+  }
+
+  function addScore(pts, e) {
+    const pop = document.createElement('div');
+    pop.className = 'score-pop';
+    pop.innerText = '+' + pts;
+    pop.style.left = e.clientX + 'px';
+    pop.style.top = e.clientY + 'px';
+    document.body.appendChild(pop);
+    setTimeout(() => pop.remove(), 1200);
+
+    const iq = document.getElementById('iq-val');
+    iq.innerText = parseInt(iq.innerText) + pts;
+  }
+
+  function speakRobot(text) {
+    robotSpeech.innerText = text;
+    robotSpeech.style.animation = 'none';
+    void robotSpeech.offsetWidth;
+    robotSpeech.style.animation = 'speechPop .4s cubic-bezier(.34,1.56,.64,1)';
+  }
+
+  // Canvas
+  function initParticles() {
+    const canvas = document.getElementById('particles-canvas');
+    const ctx = canvas.getContext('2d');
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    let particles = [];
+    class Particle {
+        constructor() {
+            this.x = Math.random() * canvas.width;
+            this.y = Math.random() * canvas.height;
+            this.size = Math.random() * 2 + 0.5;
+            this.speedX = Math.random() * 1 - 0.5;
+            this.speedY = Math.random() * 1 - 0.5;
+            this.color = `rgba(255,255,255,${Math.random() * 0.3})`;
+        }
+        update() {
+            this.x += this.speedX;
+            this.y += this.speedY;
+            if(this.x > canvas.width) this.x = 0;
+            if(this.x < 0) this.x = canvas.width;
+            if(this.y > canvas.height) this.y = 0;
+            if(this.y < 0) this.y = canvas.height;
+        }
+        draw() {
+            ctx.fillStyle = this.color;
+            ctx.beginPath();
+            ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+            ctx.fill();
+        }
+    }
+
+    for(let i=0; i<100; i++) particles.push(new Particle());
+
+    function animate() {
+        ctx.clearRect(0,0,canvas.width, canvas.height);
+        particles.forEach(p => { p.update(); p.draw(); });
+        requestAnimationFrame(animate);
+    }
+    animate();
+  }
+
+  function createStars() {
+    for(let i=0; i<150; i++) {
+        const star = document.createElement('div');
+        star.className = 'star';
+        const size = Math.random() * 3;
+        star.style.width = size + 'px';
+        star.style.height = size + 'px';
+        star.style.left = Math.random() * 100 + '%';
+        star.style.top = Math.random() * 100 + '%';
+        star.style.setProperty('--d', (Math.random() * 3 + 2) + 's');
+        star.style.setProperty('--o', Math.random() * 0.7 + 0.3);
+        document.getElementById('sky').appendChild(star);
+    }
+  }
+</script>
+
+</body>
+</html>
